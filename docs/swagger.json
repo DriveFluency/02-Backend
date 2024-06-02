@@ -1,0 +1,31 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This API Handle Shifts.",
+        "title": "Drive Fluency",
+        "termsOfService": "https://terminos-y-condiciones",
+        "contact": {
+            "name": "API Support"
+        },
+        "license": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Inicio de sesión",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    }
+}

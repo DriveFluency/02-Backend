@@ -1,0 +1,20 @@
+info:
+  contact:
+    name: API Support
+  description: This API Handle Shifts.
+  license: {}
+  termsOfService: https://terminos-y-condiciones
+  title: Drive Fluency
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Inicio de sesión
+swagger: "2.0"

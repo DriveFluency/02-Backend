@@ -2,13 +2,13 @@ package middleware
 
 import(
 
-	 "strings"
-	 "github.com/gin-gonic/gin"
 	 "net/http" 
 	 "time"
 	 "github.com/coreos/go-oidc"
 	 "context"
 	 "crypto/tls"
+	 "github.com/gin-gonic/gin"
+	 "log"
 	 "fmt"
 	)
 
@@ -44,22 +44,31 @@ type clientRoles struct {
 func AuthorizedJWT(roles []string) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-
 		
-		rawAccessToken := strings.Replace(c.GetHeader("Authorization"), "Bearer ", "", 1) 
+		//deberian funcionar ambas 
+	//	rawAccessToken := strings.Replace(c.GetHeader("Authorization"), "Bearer ", "", 1)
+	    rawAccessToken,err:= c.Cookie("access_token") 
+		/*if err != nil {
+			authorizationFailed("access token not found: "+err.Error(), c)
+			return
+		}
+*/
+		log.Printf("Raw Access token: %s", rawAccessToken)
 
+		/* cambiar redirigir al endpoint login */
 		if rawAccessToken == "" {
 			redirectURL := fmt.Sprintf("%s/protocol/openid-connect/auth?client_id=%s&response_type=code&redirect_uri=%s", RealmConfigURL, clientID, redirectURI)
     		c.Redirect(http.StatusFound, redirectURL)
 			return 
 		}
+	
 
 
 	
 		tr := &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 		client := &http.Client{
-			Timeout:   time.Duration(6000) * time.Second,
+			Timeout:   time.Duration(10000) * time.Second,
 			Transport: tr,
 		}
 
@@ -70,12 +79,14 @@ func AuthorizedJWT(roles []string) gin.HandlerFunc {
 			authorizationFailed("authorization failed while getting the provider: "+err.Error(), c)
 			return
 		}
-		oidcConfig := &oidc.Config{
-			ClientID: clientID,
-		}
 
-		
+		// espero que traiga el token con las claves de validacion para el cliente drivefluency pero retorna para el cliente account
+		oidcConfig := &oidc.Config{
+			ClientID: clientID,	
+		}
 		verifier := provider.Verifier(oidcConfig)
+		log.Printf("devuelve un IDTokenVerifier que utiliza el conjunto de claves del proveedor para verificar los JWT.")
+	
 		idToken, err := verifier.Verify(ctx, rawAccessToken) 
 		if err != nil {
 			authorizationFailed("authorization failed while verifying the token: "+err.Error(), c)
@@ -90,10 +101,11 @@ func AuthorizedJWT(roles []string) gin.HandlerFunc {
 		}
 
 		
+
 		user_access_roles := IDTokenClaims.ResourceAccess.DriveFluency.Roles
 		for _, b := range user_access_roles {
-			
-			if b == roles[0] && c.FullPath() == "/prueba" { 
+			log.Printf("ROL %s",b)
+			if b == roles[0] && c.FullPath() == "/prueba/" { 
 				c.Next() 
 				return
 			}
