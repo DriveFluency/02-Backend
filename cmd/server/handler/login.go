@@ -13,8 +13,8 @@ import (
 
 var (
 	clientID     = "drivefluency"
-	clientSecret = "voJHDlSbYC69OzKDCA1CeGVkHXWhMxQd"
-	realmURL  = "http://localhost:8090/realms/DriveFluency" // cambiar 
+	clientSecret = "zu91aOn5aaW6VeixW9MqZ21xCa0jRi6l"
+	realmURL  = "http://conducirya.com.ar:18080/realms/DriveFluency" // cambiar 
    // redirectURI  = "http://localhost:8085/callback"
     tokenURL     = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
 	authURL      = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
@@ -57,8 +57,8 @@ func LoginHandler(c *gin.Context){
 
      c.JSON(http.StatusOK, gin.H{"access_token": token})
 
-     // redirigir al home del front ? 
-    // c.Redirect(http.StatusFound, url del home del front )
+     // redirigir al home del front ? conducirya.com.ar/home 
+     c.Redirect(http.StatusFound, "http://conducirya.com.ar" )
 
 
 }

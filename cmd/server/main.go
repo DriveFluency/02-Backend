@@ -35,6 +35,10 @@ func main() {
 	r.POST("/login", handler.LoginHandler)
    // r.GET("/callback", handler.CallbackHandler)
 
+   // cierre de sesion con keycloak ... 
+   // actualizar contraseña -->  directamente a keycloak 
+
+
 	roles:= []string{"cliente","admin"}
     r.Use(middleware.AuthorizedJWT(roles)) 
 
@@ -48,6 +52,9 @@ func main() {
 		endopointsPrueba.GET("/admin" ,func (c *gin.Context){
 			c.JSON(http.StatusOK, gin.H{"endpoint": "only user admin"})
             return} )
+
+			
+		
 }
 
 r.Run(":8085")
