@@ -14,9 +14,10 @@ import(
 
 
 var (
-	RealmConfigURL string = "http://localhost:8090/realms/DriveFluency"
+	RealmConfigURL string = "http://localhost:8090/realms/DriveFluency" // cambiar 
     clientID string = "drivefluency"
-    redirectURI  = "http://localhost:8085/callback")
+    redirectURI  = "http://localhost:8085/callback" // no va )
+	)
 
 
 type Res401Struct struct{
@@ -58,7 +59,8 @@ func AuthorizedJWT(roles []string) gin.HandlerFunc {
 		/* cambiar redirigir al endpoint login */
 		if rawAccessToken == "" {
 			redirectURL := fmt.Sprintf("%s/protocol/openid-connect/auth?client_id=%s&response_type=code&redirect_uri=%s", RealmConfigURL, clientID, redirectURI)
-    		c.Redirect(http.StatusFound, redirectURL)
+    		c.Redirect(http.StatusFound, redirectURL) 
+			// cambiar por la url del login del front que consulta al endpoint login 
 			return 
 		}
 	

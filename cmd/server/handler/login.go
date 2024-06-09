@@ -14,8 +14,8 @@ import (
 var (
 	clientID     = "drivefluency"
 	clientSecret = "voJHDlSbYC69OzKDCA1CeGVkHXWhMxQd"
-	realmURL  = "http://localhost:8090/realms/DriveFluency"
-    redirectURI  = "http://localhost:8085/callback"
+	realmURL  = "http://localhost:8090/realms/DriveFluency" // cambiar 
+   // redirectURI  = "http://localhost:8085/callback"
     tokenURL     = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
 	authURL      = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
     
@@ -56,6 +56,9 @@ func LoginHandler(c *gin.Context){
      c.SetCookie("access_token", token, 3600, "/", "localhost", false, true)
 
      c.JSON(http.StatusOK, gin.H{"access_token": token})
+
+     // redirigir al home del front ? 
+    // c.Redirect(http.StatusFound, url del home del front )
 
 
 }
