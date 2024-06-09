@@ -1,82 +1,75 @@
 package handler
 
-
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
-    "github.com/gin-gonic/gin"
 	//"github.com/coreos/go-oidc"
 	"context"
-	"log"
 	"golang.org/x/oauth2"
+	"log"
 )
 
 var (
 	clientID     = "drivefluency"
 	clientSecret = "zu91aOn5aaW6VeixW9MqZ21xCa0jRi6l"
-	realmURL  = "http://conducirya.com.ar:18080/realms/DriveFluency" // cambiar 
-   // redirectURI  = "http://localhost:8085/callback"
-    tokenURL     = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
-	authURL      = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
-    
-
+	realmURL     = "http://conducirya.com.ar:18080/realms/DriveFluency"
+	// redirectURI  = "http://localhost:8085/callback"
+	tokenURL = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
+	authURL  = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
 )
 
-type RequestBody struct{
-
-    Username string `json:"username" binding:"required"`
-    Password string `json:"password" binding:"required"`
-
+type RequestBody struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
-
-
 
 // @Summary Inicio de sesión
 // @Tag Login
-//@Accept json
+// @Accept json
 // @Produce json
 // @Success 200
 // @Router /login [post]
-func LoginHandler(c *gin.Context){
+func LoginHandler(c *gin.Context) {
 
-    var body RequestBody
-    err := c.ShouldBindJSON(&body)
-    if err != nil {
-       c.JSON(http.StatusBadRequest,gin.H{"error":"invalid request"} )
-       return 
-     }
+	var body RequestBody
+	err := c.ShouldBindJSON(&body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
 
-     // obtener token 
-     token, err := authenticateUser(body.Username, body.Password)
-     if err != nil {
-         c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed"})
-         return
-     }
- 
-     c.SetCookie("access_token", token, 3600, "/", "localhost", false, true)
+	// obtener token
+	token, err := authenticateUser(body.Username, body.Password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed"})
+		return
+	}
 
-     c.JSON(http.StatusOK, gin.H{"access_token": token})
+	log.Printf("setea el token en la cookie al iniciar sesión, %s", token)
+	c.SetCookie("access_token", token, 3600, "/", "localhost", false, true) // ver el dominio en el cual estaría habilitada
 
-     // redirigir al home del front ? conducirya.com.ar/home 
-     c.Redirect(http.StatusFound, "http://conducirya.com.ar" )
+	c.JSON(http.StatusOK, gin.H{"access_token": token})
 
+	// redirigir al home del front
+	c.Redirect(http.StatusFound, "http://conducirya.com.ar")
 
 }
 
-//postman
+// postman
 func authenticateUser(username, password string) (string, error) {
 	oauth2Config := &oauth2.Config{
- 	ClientID:     clientID,
- 	ClientSecret: clientSecret,
- 	Endpoint: oauth2.Endpoint{
- 		TokenURL: tokenURL,
- 		AuthURL:  authURL,
- 	},
- 	Scopes: []string{"roles","email"}, //"profile", "email",
- }
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		Endpoint: oauth2.Endpoint{
+			TokenURL: tokenURL,
+			AuthURL:  authURL,
+		},
+		Scopes: []string{"roles", "email"}, //"profile", "email",
+	}
 
 	ctx := context.Background()
-	token, err := oauth2Config.PasswordCredentialsToken(ctx,username,password)
+	token, err := oauth2Config.PasswordCredentialsToken(ctx, username, password)
 	if err != nil {
 		log.Printf("Error getting token: %v", err)
 		return "", err
@@ -85,10 +78,7 @@ func authenticateUser(username, password string) (string, error) {
 	return token.AccessToken, nil
 }
 
-
-
-
-/*//callback 
+/*//callback
 
 var (
     oauth2Config = oauth2.Config{
@@ -127,7 +117,7 @@ func CallbackHandler(c *gin.Context) {
         return
     }
 
-    
+
     c.SetCookie("access_token", token, 3600, "/", "localhost", false, true)
 
 
@@ -137,8 +127,8 @@ func CallbackHandler(c *gin.Context) {
 }
 
 
-func exchangeCodeForToken(code string) (string, error) { 
-    ctx := context.Background() 
+func exchangeCodeForToken(code string) (string, error) {
+    ctx := context.Background()
     token, err := oauth2Config.Exchange(ctx, code) // revisar
     if err != nil {
 		log.Printf("Error exchanging code for token: %v", err)

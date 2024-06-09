@@ -1,16 +1,14 @@
 package main
 
 import (
-	"github.com/DriveFluency/02-Backend/pkg/middleware"
-    "github.com/DriveFluency/02-Backend/cmd/server/handler"
-	"net/http"
-    "github.com/gin-gonic/gin"
+	"github.com/DriveFluency/02-Backend/cmd/server/handler"
 	"github.com/DriveFluency/02-Backend/docs"
+	"github.com/DriveFluency/02-Backend/pkg/middleware"
+	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-
+	"net/http"
 )
-
 
 // @title Drive Fluency
 // @version 1.0
@@ -23,9 +21,7 @@ import (
 // @license.name
 // @license.url
 
-
 func main() {
-
 
 	r := gin.Default()
 
@@ -33,30 +29,25 @@ func main() {
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.POST("/login", handler.LoginHandler)
-   // r.GET("/callback", handler.CallbackHandler)
+	// r.GET("/callback", handler.CallbackHandler)
+	r.POST("/logout", handler.LogoutHandler)
 
-   // cierre de sesion con keycloak ... 
-   // actualizar contraseña -->  directamente a keycloak 
+	roles := []string{"cliente", "admin"}
+	r.Use(middleware.AuthorizedJWT(roles))
 
-
-	roles:= []string{"cliente","admin"}
-    r.Use(middleware.AuthorizedJWT(roles)) 
-
-	
 	endopointsPrueba := r.Group("/prueba")
 	{
-		endopointsPrueba.GET("/",func (c *gin.Context){
+		endopointsPrueba.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"endpoint": "all users"})
-				return} )
+			return
+		})
 
-		endopointsPrueba.GET("/admin" ,func (c *gin.Context){
+		endopointsPrueba.GET("/admin", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"endpoint": "only user admin"})
-            return} )
+			return
+		})
 
-			
-		
+	}
+
+	r.Run(":8085")
 }
-
-r.Run(":8085")
-}
-
