@@ -1,13 +1,16 @@
 package main
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/DriveFluency/02-Backend/cmd/server/handler"
 	"github.com/DriveFluency/02-Backend/docs"
 	"github.com/DriveFluency/02-Backend/pkg/middleware"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"net/http"
 )
 
 // @title Drive Fluency
@@ -22,8 +25,20 @@ import (
 // @license.url
 
 func main() {
-
 	r := gin.Default()
+
+	// Configurar CORS
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "http://localhost:3000"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 
 	docs.SwaggerInfo.Host = "localhost:8085"
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -39,14 +54,11 @@ func main() {
 	{
 		endopointsPrueba.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"endpoint": "all users"})
-			return
 		})
 
 		endopointsPrueba.GET("/admin", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"endpoint": "only user admin"})
-			return
 		})
-
 	}
 
 	r.Run(":8085")
