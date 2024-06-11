@@ -66,7 +66,7 @@ func LogoutHandler(c *gin.Context) {
 		return
 	}
 
-	// 5. Obtener el JTI del token
+	// JTI del token
 	jti, ok := claims["jti"].(string)
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "JTI not found in token claims"})

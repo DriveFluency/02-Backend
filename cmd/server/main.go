@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"time"
-
 	"github.com/DriveFluency/02-Backend/cmd/server/handler"
 	"github.com/DriveFluency/02-Backend/docs"
 	"github.com/DriveFluency/02-Backend/pkg/middleware"
@@ -46,6 +45,7 @@ func main() {
 	r.POST("/login", handler.LoginHandler)
 	// r.GET("/callback", handler.CallbackHandler)
 	r.POST("/logout", handler.LogoutHandler)
+	r.GET("/reset", handler.ResetHandler)
 
 	roles := []string{"cliente", "admin"}
 	r.Use(middleware.AuthorizedJWT(roles))
