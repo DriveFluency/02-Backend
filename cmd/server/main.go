@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/DriveFluency/02-Backend/pkg/middleware"
-    "github.com/DriveFluency/02-Backend/cmd/server/handler"
 	"net/http"
-    "github.com/gin-gonic/gin"
+	"time"
+	"github.com/DriveFluency/02-Backend/cmd/server/handler"
 	"github.com/DriveFluency/02-Backend/docs"
+	"github.com/DriveFluency/02-Backend/pkg/middleware"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-
 )
-
 
 // @title Drive Fluency
 // @version 1.0
@@ -23,40 +23,43 @@ import (
 // @license.name
 // @license.url
 
-
 func main() {
-
-
 	r := gin.Default()
+
+	// Configurar CORS
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "http://localhost:3000"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 
 	docs.SwaggerInfo.Host = "localhost:8085"
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.POST("/login", handler.LoginHandler)
-   // r.GET("/callback", handler.CallbackHandler)
+	// r.GET("/callback", handler.CallbackHandler)
+	r.POST("/logout", handler.LogoutHandler)
+	r.GET("/reset", handler.ResetHandler)
 
-   // cierre de sesion con keycloak ... 
-   // actualizar contraseña -->  directamente a keycloak 
+	roles := []string{"cliente", "admin"}
+	r.Use(middleware.AuthorizedJWT(roles))
 
-
-	roles:= []string{"cliente","admin"}
-    r.Use(middleware.AuthorizedJWT(roles)) 
-
-	
 	endopointsPrueba := r.Group("/prueba")
 	{
-		endopointsPrueba.GET("/",func (c *gin.Context){
+		endopointsPrueba.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"endpoint": "all users"})
-				return} )
+		})
 
-		endopointsPrueba.GET("/admin" ,func (c *gin.Context){
+		endopointsPrueba.GET("/admin", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"endpoint": "only user admin"})
-            return} )
+		})
+	}
 
-			
-		
+	r.Run(":8085")
 }
-
-r.Run(":8085")
-}
-
