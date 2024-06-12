@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "loginPasswordAdmin",
+			"name": "loginPasswordAdminLocal",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"admin\"\r\n}\r\n",
+					"raw": "{\r\n  \"username\": \"admin@drive.com\",\r\n  \"password\": \"admin\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -63,13 +63,178 @@
 			"response": []
 		},
 		{
+			"name": "logOutLocal",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8085/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"logout"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reset",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"admin\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8085/reset",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"reset"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "loginPasswordAdminServidor",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"usuario@drive.com\",\r\n  \"password\": \"usuario\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://conducirya.com.ar:8085/login",
+					"protocol": "http",
+					"host": [
+						"conducirya",
+						"com",
+						"ar"
+					],
+					"port": "8085",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "loginPasswordUsuario",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"username\": \"usuario\",\r\n  \"password\": \"usuario\"\r\n}",
+					"raw": "{\r\n  \"username\": \"usuario@drive.com\",\r\n  \"password\": \"usuario\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -127,47 +292,6 @@
 				"method": "GET",
 				"header": [],
 				"url": "http://localhost:8085/prueba/admin"
-			},
-			"response": []
-		},
-		{
-			"name": "keycloakNova",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8090/realms/DriveFluency/protocol/openid-connect/auth?client_id=drivefluency&response_type=code&redirect_uri=http://localhost:8085/&scope=openid roles",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8090",
-					"path": [
-						"realms",
-						"DriveFluency",
-						"protocol",
-						"openid-connect",
-						"auth"
-					],
-					"query": [
-						{
-							"key": "client_id",
-							"value": "drivefluency"
-						},
-						{
-							"key": "response_type",
-							"value": "code"
-						},
-						{
-							"key": "redirect_uri",
-							"value": "http://localhost:8085/"
-						},
-						{
-							"key": "scope",
-							"value": "openid roles"
-						}
-					]
-				}
 			},
 			"response": []
 		}

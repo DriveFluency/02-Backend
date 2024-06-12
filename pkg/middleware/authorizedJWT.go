@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	RealmConfigURL string = "http://conducirya.com.ar:18080/realms/DriveFluency" // cambiar
+	RealmConfigURL string ="http://conducirya.com.ar:18080/realms/DriveFluency" // "http://localhost:8090/realms/DriveFluency" 
 	clientID       string = "drivefluency"
 	// redirectURI  = "http://localhost:8085/callback" // no va )
 )
