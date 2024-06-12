@@ -2,18 +2,21 @@ package handler
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	//"github.com/coreos/go-oidc"
 	"context"
-	"golang.org/x/oauth2"
 	"log"
+
+	"golang.org/x/oauth2"
 )
 
 var (
 	clientID     = "drivefluency"
-	clientSecret = "083E22w85Iw9T2vctotLkT3ZAEDaqXsA" //
-	realmURL     = "http://conducirya.com.ar:18080/realms/DriveFluency"   //http://localhost:8090/realms/DriveFluency"
+	clientSecret = "083E22w85Iw9T2vctotLkT3ZAEDaqXsA"                   //
+	realmURL     = "http://conducirya.com.ar:18080/realms/DriveFluency" //http://localhost:8090/realms/DriveFluency"
 	// redirectURI  = "http://localhost:8085/callback"
 	tokenURL = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
 	authURL  = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
@@ -44,12 +47,12 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed"})
 		return
 	}
-	
+
 	log.Printf("setea el token en la cookie al iniciar sesión, %s", token)
-	c.SetCookie("access_token", token, 3600, "/", "localhost", false, true) // ver el dominio en el cual estaría habilitada
+	c.SetCookie("access_token", token, 3600, "/", "http://conducirya.com.ar", false, true) // ver el dominio en el cual estaría habilitada
 	c.JSON(http.StatusOK, gin.H{"access_token": token})
 
-	// Ya lo redireccionan del front 
+	// Ya lo redireccionan del front
 	//c.Redirect(http.StatusFound, "http://conducirya.com.ar")
 
 }

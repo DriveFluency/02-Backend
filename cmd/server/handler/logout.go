@@ -4,12 +4,13 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/coreos/go-oidc"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/coreos/go-oidc"
+	"github.com/gin-gonic/gin"
 )
 
 // Utiliza las mismas variables del paquete que estan en login.go
@@ -94,9 +95,9 @@ func LogoutHandler(c *gin.Context) {
 	log.Printf("cierre de sesión exitoso %s", logOut.Status)
 
 	//borrar la cookie y redireccionar al home del front
-	c.SetCookie("access_token", "", -1, "/", "localhost", false, true)
+	c.SetCookie("access_token", "", -1, "/", "http://conducirya.com.ar", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
-	//c.Redirect(http.StatusFound, "http://conducirya.com.ar")
+	c.Redirect(http.StatusFound, "http://conducirya.com.ar")
 
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"time"
+
 	"github.com/DriveFluency/02-Backend/cmd/server/handler"
 	"github.com/DriveFluency/02-Backend/docs"
 	"github.com/DriveFluency/02-Backend/pkg/middleware"
@@ -28,13 +29,13 @@ func main() {
 
 	// Configurar CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     []string{"http://conducirya.com.ar"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			return origin == "http://localhost:3000"
+			return origin == "http://conducirya.com.ar"
 		},
 		MaxAge: 12 * time.Hour,
 	}))
