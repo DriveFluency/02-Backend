@@ -10,7 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+
+
 )
+
 
 // @title Drive Fluency
 // @version 1.0
@@ -32,10 +36,10 @@ func main() {
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
+		AllowCredentials: true, //habilita uso de cookies
+		/*AllowOriginFunc: func(origin string) bool {
 			return origin == "http://localhost:3000"
-		},
+		},*/
 		MaxAge: 12 * time.Hour,
 	}))
 
@@ -45,12 +49,17 @@ func main() {
 	r.POST("/login", handler.LoginHandler)
 	// r.GET("/callback", handler.CallbackHandler)
 	r.POST("/logout", handler.LogoutHandler)
-	r.GET("/reset", handler.ResetHandler)
+	r.GET("/reset", handler.ResetHandlerRedirect) // este es el que redirecciona a keycloak, funcional 
+	r.POST("/reset", handler.ResetHandler) // err: cookie no encontrada, sin credenciales 
+	r.POST("/resetPass", handler.ResetPasswordHandler) // igual anterior pero con credenciales del cliente err: cookie no encontrada, sin credenciales 
+	r.POST("/resetPass2", handler.ResetHandler2) //con credenciales --> token client,  getUser, Put a otro endpoint 
+
 
 	roles := []string{"cliente", "admin"}
-	r.Use(middleware.AuthorizedJWT(roles))
+
 
 	endopointsPrueba := r.Group("/prueba")
+	endopointsPrueba.Use(middleware.AuthorizedJWT(roles))
 	{
 		endopointsPrueba.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"endpoint": "all users"})
