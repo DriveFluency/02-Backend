@@ -12,8 +12,8 @@ import (
 
 var (
 	clientID     = "drivefluency"
-	clientSecret =  "UMQuQX26AD63348ftkzL8c2AyBB05s3f"//"083E22w85Iw9T2vctotLkT3ZAEDaqXsA"
-	realmURL     =  "http://localhost:8090/realms/DriveFluency" //"http://conducirya.com.ar:18080/realms/DriveFluency"  
+	clientSecret ="083E22w85Iw9T2vctotLkT3ZAEDaqXsA"  //"UMQuQX26AD63348ftkzL8c2AyBB05s3f"
+	realmURL     =  "http://conducirya.com.ar:18080/realms/DriveFluency" //"http://localhost:8090/realms/DriveFluency"  
 	// redirectURI  = "http://localhost:8085/callback"
 	tokenURL = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
 	authURL  = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)

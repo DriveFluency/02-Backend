@@ -19,9 +19,11 @@ type R struct {
     Username string `json:"username" binding:"required"`
 }
 
-func getClientCredentialsToken(ctx context.Context, clientID, clientSecret, realm string) (string, error) {
+
+
+func getClientCredentialsToken(ctx context.Context) (string, error) {
    
-	providerURL := fmt.Sprintf("http://localhost:8090/realms/%s", realm)
+	providerURL := realmURL // fmt.Sprintf("http://localhost:8090/realms/%s", realm)
 
     provider, err := oidc.NewProvider(ctx, providerURL)
     if err != nil {
@@ -49,10 +51,7 @@ func ResetPasswordHandler(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
         return
     }
-    clientID := "drivefluency"
-    clientSecret := "UMQuQX26AD63348ftkzL8c2AyBB05s3f"
-    realm := "DriveFluency"
-    //ctx := context.Background()
+   
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
@@ -64,14 +63,14 @@ func ResetPasswordHandler(c *gin.Context) {
 
 	ctx := oidc.ClientContext(context.Background(), client)
 
-    token, err := getClientCredentialsToken(ctx, clientID, clientSecret, realm)
+    token, err := getClientCredentialsToken(ctx)
     if err != nil {
 		log.Println("error al obtener el token del cliente ",err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get access token"})
         return
     }
 
-    resetPasswordURL := fmt.Sprintf("http://localhost:8090/realms/%s/login-actions/reset-credentials?client_id=%s", realm, clientID)
+    resetPasswordURL := fmt.Sprintf("%s/login-actions/reset-credentials?client_id=%s", realmURL, clientID)
     body := map[string]string{
         "username": req.Username,
     }

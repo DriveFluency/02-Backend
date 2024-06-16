@@ -17,7 +17,7 @@ type Request struct{
 	Username string `json:"username" binding:"required"`
 }
 
-var UrlResetPrueba =fmt.Sprintf("http://localhost:8090/realms/DriveFluency/login-actions/reset-credentials?client_id=%s",clientID)
+var UrlResetPrueba =fmt.Sprintf("%s/login-actions/reset-credentials?client_id=%s",realmURL,clientID)
 //con auth despues 
 
 func ResetHandlerRedirect(c *gin.Context){

@@ -17,11 +17,10 @@ type TokenResponse struct {
 }
 
 // genera el token para el cliente 
-func getAdminToken(clientID, clientSecret string) (string, error) {
-	adminURL := "http://localhost:8090/realms/DriveFluency/protocol/openid-connect/token"
-
+func getAdminToken() (string, error) {
+	
 	data := fmt.Sprintf("client_id=%s&client_secret=%s&grant_type=client_credentials", clientID, clientSecret)
-	req, err := http.NewRequest("POST", adminURL, bytes.NewBufferString(data))
+	req, err := http.NewRequest("POST", tokenURL, bytes.NewBufferString(data))
 	if err != nil {
 		return "", err
 	}
@@ -63,7 +62,7 @@ type User struct {
 
 //figura que  no tiene permisos para listar los usuarios 
 func findUserID(username, token string) (string, error) {
-	userURL := fmt.Sprintf("http://localhost:8090/admin/realms/DriveFluency/users?username=%s", username)
+	userURL := fmt.Sprintf("http://conducirya.com.ar:18080/admin/realms/DriveFluency/users?username=%s", username)
 
 	req, err := http.NewRequest("GET", userURL, nil)
 	if err != nil {
@@ -99,7 +98,7 @@ func findUserID(username, token string) (string, error) {
 		return "", err
 	}
 
-	log.Println("usuarios cya guardados en slice", users)
+	log.Println("usuarios ya guardados en slice", users)
 
 	if len(users) == 0 {
 		return "", fmt.Errorf("user not found")
@@ -115,10 +114,7 @@ func ResetHandler2(c *gin.Context) {
 		return
 	}
 
-	clientID := "drivefluency"
-	clientSecret := "UMQuQX26AD63348ftkzL8c2AyBB05s3f"
-
-	token, err := getAdminToken(clientID, clientSecret)
+	token, err := getAdminToken()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get admin token"})
 		return
@@ -130,7 +126,7 @@ func ResetHandler2(c *gin.Context) {
 		return
 	}
 
-	resetPasswordURL := fmt.Sprintf("http://localhost:8090/admin/realms/DriveFluency/users/%s/execute-actions-email", userID)
+	resetPasswordURL := fmt.Sprintf("http://conducirya.com.ar:18080/admin/realms/DriveFluency/users/%s/execute-actions-email", userID)
 	reqBody := []string{"UPDATE_PASSWORD"}
 	bodyBytes, err := json.Marshal(reqBody)
 	if err != nil {
