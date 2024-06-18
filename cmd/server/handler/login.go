@@ -8,12 +8,13 @@ import (
 	"context"
 	"golang.org/x/oauth2"
 	"log"
+	
 )
 
 var (
 	clientID     = "drivefluency"
-	clientSecret ="083E22w85Iw9T2vctotLkT3ZAEDaqXsA"  //"UMQuQX26AD63348ftkzL8c2AyBB05s3f"
-	realmURL     =  "http://conducirya.com.ar:18080/realms/DriveFluency" //"http://localhost:8090/realms/DriveFluency"  
+	clientSecret = "UMQuQX26AD63348ftkzL8c2AyBB05s3f"//"083E22w85Iw9T2vctotLkT3ZAEDaqXsA" 
+	realmURL     =  "http://localhost:8090/realms/DriveFluency"   //"http://conducirya.com.ar:18080/realms/DriveFluency"
 	// redirectURI  = "http://localhost:8085/callback"
 	tokenURL = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
 	authURL  = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
@@ -64,7 +65,7 @@ func authenticateUser(username, password string) (string, error) {
 			TokenURL: tokenURL,
 			AuthURL:  authURL,
 		},
-		Scopes: []string{"roles", "email"}, //"profile", "email",
+		Scopes: []string{"roles", "email","dni"}, //"profile", "email", dni ? 
 	}
 
 	ctx := context.Background()
@@ -74,8 +75,72 @@ func authenticateUser(username, password string) (string, error) {
 		return "", err
 	}
 
+//
 	return token.AccessToken, nil
 }
+
+
+/*
+	// verified si esta todo bien retornas la estructura con sus datos también 
+
+	func getuser(token *oauth2.Token) User{
+   
+		
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+		client := &http.Client{
+			Timeout:   time.Duration(10000) * time.Second,
+			Transport: tr,
+		}
+
+		ctx := oidc.ClientContext(context.Background(), client)
+
+		provider, err := oidc.NewProvider(ctx, RealmConfigURL)
+		if err != nil {
+			authorizationFailed("authorization failed while getting the provider: "+err.Error(), c)
+			return
+		}
+
+		// espero que traiga el token con las claves de validacion para el cliente drivefluency pero retorna para el cliente account
+		oidcConfig := &oidc.Config{
+			ClientID: clientID,
+		}
+		verifier := provider.Verifier(oidcConfig)
+		log.Printf("devuelve un IDTokenVerifier que utiliza el conjunto de claves del proveedor para verificar los JWT.")
+
+		idToken, err := verifier.Verify(ctx, rawAccessToken)
+		if err != nil {
+			authorizationFailed("authorization failed while verifying the token: "+err.Error(), c)
+			return
+		}
+
+		var IDTokenClaims Claims
+		if err := idToken.Claims(&IDTokenClaims); err != nil {
+			authorizationFailed("claims : "+err.Error(), c)
+			return
+		}
+/*
+		user_access_roles := IDTokenClaims.ResourceAccess.DriveFluency.Roles
+		for _, b := range user_access_roles {
+			log.Printf("ROL %s", b)
+			if b == roles[0] && c.FullPath() == "/prueba/" {
+				c.Next()
+				return
+			}
+			if b == roles[1] {
+				c.Next()
+				return
+			}
+		}	*/
+	/*	if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read user"})
+			return
+		}
+*/
+	
+
+
+
 
 /*//callback
 

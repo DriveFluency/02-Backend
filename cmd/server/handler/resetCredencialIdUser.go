@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+var UserURL="http://conducirya.com.ar:18080/admin/realms/DriveFluency/users" 
+
 type TokenResponse struct {
 	AccessToken string `json:"access_token"`
 }
@@ -62,7 +64,7 @@ type User struct {
 
 //figura que  no tiene permisos para listar los usuarios 
 func findUserID(username, token string) (string, error) {
-	userURL := fmt.Sprintf("http://conducirya.com.ar:18080/admin/realms/DriveFluency/users?username=%s", username)
+	userURL := fmt.Sprintf("%s?username=%s",UserURL, username)
 
 	req, err := http.NewRequest("GET", userURL, nil)
 	if err != nil {
@@ -126,7 +128,7 @@ func ResetHandler2(c *gin.Context) {
 		return
 	}
 
-	resetPasswordURL := fmt.Sprintf("http://conducirya.com.ar:18080/admin/realms/DriveFluency/users/%s/execute-actions-email", userID)
+	resetPasswordURL := fmt.Sprintf("%s/%s/execute-actions-email", UserURL, userID)
 	reqBody := []string{"UPDATE_PASSWORD"}
 	bodyBytes, err := json.Marshal(reqBody)
 	if err != nil {
