@@ -47,9 +47,8 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed"})
 		return
 	}
-
-	log.Printf("setea el token en la cookie al iniciar sesión, %s", token)
-	c.SetCookie("access_token", token, 3600, "/", "http://conducirya.com.ar", false, true) // ver el dominio en el cual estaría habilitada
+	//c.SetCookie("access_token", token, 3600, "/", "http://conducirya.com.ar", false, true) // ver el dominio en el cual estaría habilitada
+	c.Header("access_token", token)
 	c.JSON(http.StatusOK, gin.H{"access_token": token})
 
 	// Ya lo redireccionan del front
@@ -66,7 +65,7 @@ func authenticateUser(username, password string) (string, error) {
 			TokenURL: tokenURL,
 			AuthURL:  authURL,
 		},
-		Scopes: []string{"roles", "email"}, //"profile", "email",
+		Scopes: []string{"roles", "email","DNI"}, //"profile", "email",
 	}
 
 	ctx := context.Background()

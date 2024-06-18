@@ -29,14 +29,14 @@ func main() {
 
 	// Configurar CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://conducirya.com.ar"},
+		AllowOrigins:     []string{"*"},//"http://conducirya.com.ar"
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
+		ExposeHeaders:    []string{"Content-Length","Authorization"},
 		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
+		/*AllowOriginFunc: func(origin string) bool {
 			return origin == "http://conducirya.com.ar"
-		},
+		},*/
 		MaxAge: 12 * time.Hour,
 	}))
 
@@ -49,9 +49,9 @@ func main() {
 	r.GET("/reset", handler.ResetHandler)
 
 	roles := []string{"cliente", "admin"}
-	r.Use(middleware.AuthorizedJWT(roles))
-
+	
 	endopointsPrueba := r.Group("/prueba")
+	endopointsPrueba.Use(middleware.AuthorizedJWT(roles))
 	{
 		endopointsPrueba.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"endpoint": "all users"})
@@ -61,6 +61,8 @@ func main() {
 			c.JSON(http.StatusOK, gin.H{"endpoint": "only user admin"})
 		})
 	}
+	
+
 
 	r.Run(":8085")
 }

@@ -20,10 +20,10 @@ var (
 
 func LogoutHandler(c *gin.Context) {
 
-	//buscamos el access token en la cookie
-	rawAccessToken, err := c.Cookie("access_token")
-	log.Printf("Raw Access token obteniendolo de la cookie endpoint log out: %s", rawAccessToken)
-	if err != nil {
+	//rawAccessToken, err := c.Cookie("access_token")
+	rawAccessToken:= c.GetHeader("token")
+	log.Printf("Raw Access token obteniendolo del header endpoint log out: %s", rawAccessToken)
+	if rawAccessToken == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "access token not found"})
 		return
 	}
@@ -93,11 +93,8 @@ func LogoutHandler(c *gin.Context) {
 		return
 	}
 	log.Printf("cierre de sesión exitoso %s", logOut.Status)
-
-	//borrar la cookie y redireccionar al home del front
-	c.SetCookie("access_token", "", -1, "/", "http://conducirya.com.ar", false, true)
-
 	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
-	c.Redirect(http.StatusFound, "http://conducirya.com.ar")
+	//c.Redirect(http.StatusFound, "http://conducirya.com.ar")
+	// del front borran el jwt del localstorage
 
 }

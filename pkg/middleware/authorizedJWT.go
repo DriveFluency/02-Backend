@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	RealmConfigURL string ="http://conducirya.com.ar:18080/realms/DriveFluency" // "http://localhost:8090/realms/DriveFluency" 
+	RealmConfigURL string = "http://localhost:8090/realms/DriveFluency" //"http://conducirya.com.ar:18080/realms/DriveFluency"
 	clientID       string = "drivefluency"
 	// redirectURI  = "http://localhost:8085/callback" // no va )
 )
@@ -42,19 +42,14 @@ func AuthorizedJWT(roles []string) gin.HandlerFunc {
 
 		//deberian funcionar ambas
 		//	rawAccessToken := strings.Replace(c.GetHeader("Authorization"), "Bearer ", "", 1)
-		rawAccessToken, err := c.Cookie("access_token")
-		/*if err != nil {
-			authorizationFailed("access token not found: "+err.Error(), c)
-			return
-		}
-		*/
+		rawAccessToken := c.GetHeader("token") //c.Cookie("access_token")
 		log.Printf("Raw Access token en el middleware: %s", rawAccessToken)
 
 		/* cambiar redirigir al endpoint login */
 		if rawAccessToken == "" {
-			//redirectURL := fmt.Sprintf("%s/protocol/openid-connect/auth?client_id=%s&response_type=code&redirect_uri=%s", RealmConfigURL, clientID, redirectURI)
-			c.Redirect(http.StatusFound, "http://conducirya.com.ar")
-			//c.JSON(http.StatusBadRequest, gin.H{"cookie":"vacia"})
+			//c.JSON(http.StatusBadRequest, gin.H{"error": "access token not found"})
+			c.Redirect(http.StatusFound, "http://conducirya.com.ar/SignIn") //ver si esta bien la ruta	
+			//c.Abort()
 			return
 		}
 
