@@ -16,6 +16,8 @@ import (
 // Utiliza las mismas variables del paquete que estan en login.go
 var (
 	logoutURL = fmt.Sprintf("%s/protocol/openid-connect/logout", realmURL)
+
+	//reamlSinPuerto = "http://conducirya.com.ar/realms/DriveFluency" nofunciona si el front tiene esta direccion
 )
 
 func LogoutHandler(c *gin.Context) {
@@ -41,6 +43,7 @@ func LogoutHandler(c *gin.Context) {
 
 	provider, err := oidc.NewProvider(ctx, realmURL)
 	if err != nil {
+		log.Printf("Error getting the provider: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed log out while getting the provider"})
 		return
 	}
@@ -54,6 +57,7 @@ func LogoutHandler(c *gin.Context) {
 
 	idToken, err := verifier.Verify(ctx, rawAccessToken)
 	if err != nil {
+		log.Printf("Error getting token: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to verify token"})
 		return
 	}
