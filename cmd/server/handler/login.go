@@ -3,21 +3,20 @@ package handler
 import (
 	"fmt"
 	"net/http"
-
+	"github.com/DriveFluency/02-Backend/internal"
 	"github.com/gin-gonic/gin"
-
-	//"github.com/coreos/go-oidc"
+	"github.com/coreos/go-oidc"
 	"context"
 	"log"
-
 	"golang.org/x/oauth2"
+	"time"
+	"crypto/tls"
 )
 
 var (
 	clientID     = "drivefluency"
 	clientSecret = "083E22w85Iw9T2vctotLkT3ZAEDaqXsA"                   //
 	realmURL     = "http://conducirya.com.ar:18080/realms/DriveFluency" //http://localhost:8090/realms/DriveFluency"
-	// redirectURI  = "http://localhost:8085/callback"
 	tokenURL = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
 	authURL  = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
 )
@@ -41,15 +40,21 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
-	// obtener token
+	// obtener token, este es el error q tiene el front
 	token, err := authenticateUser(body.Username, body.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed"})
 		return
 	}
+
+	/**/datosUsuario, err := saveUser(token, c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "save properties of user"})
+		return
+	}
 	//c.SetCookie("access_token", token, 3600, "/", "http://conducirya.com.ar", false, true) // ver el dominio en el cual estaría habilitada
 	c.Header("access_token", token)
-	c.JSON(http.StatusOK, gin.H{"access_token": token})
+	c.JSON(http.StatusOK, gin.H{"access_token": token, "user": datosUsuario}) //
 
 	// Ya lo redireccionan del front
 	//c.Redirect(http.StatusFound, "http://conducirya.com.ar")
@@ -65,7 +70,7 @@ func authenticateUser(username, password string) (string, error) {
 			TokenURL: tokenURL,
 			AuthURL:  authURL,
 		},
-		Scopes: []string{"roles", "email","DNI"}, //"profile", "email",
+		Scopes: []string{"roles","usuario"}, //"profile", "email",DNI con atribbute
 	}
 
 	ctx := context.Background()
@@ -74,70 +79,49 @@ func authenticateUser(username, password string) (string, error) {
 		log.Printf("Error getting token: %v", err)
 		return "", err
 	}
-
 	return token.AccessToken, nil
 }
 
-/*//callback
+func saveUser(token string , c *gin.Context) (internal.User,error){
 
-var (
-    oauth2Config = oauth2.Config{
-        ClientID:     clientID,
-        ClientSecret: clientSecret,
-        Endpoint:     oauth2.Endpoint{
-            AuthURL:  fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL),
-            TokenURL: fmt.Sprintf("%s/protocol/openid-connect/token", realmURL),
-        },
-        RedirectURL: redirectURI,
-		Scopes:      []string{oidc.ScopeOpenID,"roles","email" }, // revisar "profile", "email"
+  var Usuario internal.User
 
-    }
-)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+	client := &http.Client{
+		Timeout:   time.Duration(10000) * time.Second,
+		Transport: tr,
+	}
+
+	ctx := oidc.ClientContext(context.Background(), client)
+
+	provider, err := oidc.NewProvider(ctx, realmURL)
+	if err != nil {
+		log.Printf("Error getting the provider: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed save user while getting the provider"})	
+		
+	}
+
+	oidcConfig := &oidc.Config{
+		ClientID: clientID,
+	}
+
+	verifier := provider.Verifier(oidcConfig)
+	log.Printf("devuelve un IDTokenVerifier que utiliza el conjunto de claves del proveedor para verificar los JWT.")
+
+	idToken, err := verifier.Verify(ctx, token)
+	if err != nil {
+		log.Printf("Error getting token: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to verify token"})
+	
+	}
+
+	if err := idToken.Claims(&Usuario); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to extract claims"})
+	}
+	log.Print("esto es lo que trajo del usuario",Usuario)
+
+	return Usuario, nil
 
 
-func LoginHandler(c *gin.Context) {
-    redirectURL := fmt.Sprintf("%s/protocol/openid-connect/auth?client_id=%s&response_type=code&redirect_uri=%s&scope=roles email", realmURL, clientID, redirectURI)
-    c.Redirect(http.StatusFound, redirectURL)
 }
-
-
-// usuario autenticado obtiene el código de acceso
-
-func CallbackHandler(c *gin.Context) {
-    code := c.Query("code")
-    if code == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "authorization code not provided"})
-        return
-    }
-	println("este es el codigo de autorización "+code)
-
-    token, err := exchangeCodeForToken(code)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to exchange code for token"+ err.Error()})
-        return
-    }
-
-
-    c.SetCookie("access_token", token, 3600, "/", "localhost", false, true)
-
-
-
-
-    c.Redirect(http.StatusFound, "http://localhost:8085/prueba")
-}
-
-
-func exchangeCodeForToken(code string) (string, error) {
-    ctx := context.Background()
-    token, err := oauth2Config.Exchange(ctx, code) // revisar
-    if err != nil {
-		log.Printf("Error exchanging code for token: %v", err)
-        return "", err
-    }
-
-	log.Printf("Access token: %s", token.AccessToken)
-
-    return token.AccessToken, nil
-}
-
-*/

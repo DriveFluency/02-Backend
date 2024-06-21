@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	RealmConfigURL string = "http://localhost:8090/realms/DriveFluency" //"http://conducirya.com.ar:18080/realms/DriveFluency"
+	RealmConfigURL string =  "http://conducirya.com.ar:18080/realms/DriveFluency"//si agregas :18080 te dice q estpera esta pero asi es un 404 "http://localhost:8090/realms/DriveFluency"
 	clientID       string = "drivefluency"
 	// redirectURI  = "http://localhost:8085/callback" // no va )
 )

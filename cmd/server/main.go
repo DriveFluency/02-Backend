@@ -3,14 +3,13 @@ package main
 import (
 	"net/http"
 	"time"
-
 	"github.com/DriveFluency/02-Backend/cmd/server/handler"
-	"github.com/DriveFluency/02-Backend/docs"
+	//"github.com/DriveFluency/02-Backend/docs"
 	"github.com/DriveFluency/02-Backend/pkg/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	//swaggerFiles "github.com/swaggo/files"
+	//ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // @title Drive Fluency
@@ -40,8 +39,8 @@ func main() {
 		MaxAge: 12 * time.Hour,
 	}))
 
-	docs.SwaggerInfo.Host = "localhost:8085"
-	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	/*docs.SwaggerInfo.Host = "localhost:8085"
+	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))*/
 
 	r.POST("/login", handler.LoginHandler)
 	// r.GET("/callback", handler.CallbackHandler)
