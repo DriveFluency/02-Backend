@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"time"
+
 	"github.com/DriveFluency/02-Backend/cmd/server/handler"
 	"github.com/DriveFluency/02-Backend/docs"
 	"github.com/DriveFluency/02-Backend/pkg/middleware"
@@ -10,11 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-
-
-
 )
-
 
 // @title Drive Fluency
 // @version 1.0
@@ -32,15 +29,18 @@ func main() {
 
 	// Configurar CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins: []string{
+			"http://localhost:3000",
+			"http://conducirya.com.ar",
+			"http://www.conducirya.com.ar",
+			"https://conducirya.com.ar",
+			"https://www.conducirya.com.ar",
+		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true, //habilita uso de cookies
-		/*AllowOriginFunc: func(origin string) bool {
-			return origin == "http://localhost:3000"
-		},*/
-		MaxAge: 12 * time.Hour,
+		MaxAge:           12 * time.Hour,
 	}))
 
 	docs.SwaggerInfo.Host = "localhost:8085"
@@ -49,14 +49,12 @@ func main() {
 	r.POST("/login", handler.LoginHandler)
 	// r.GET("/callback", handler.CallbackHandler)
 	r.POST("/logout", handler.LogoutHandler)
-	r.GET("/reset", handler.ResetHandlerRedirect) // este es el que redirecciona a keycloak, funcional 
-	r.POST("/reset", handler.ResetHandler) // err: cookie no encontrada, sin credenciales 
-	r.POST("/resetPass", handler.ResetPasswordHandler) // igual anterior pero con credenciales del cliente err: cookie no encontrada, sin credenciales 
-	r.POST("/resetPass2", handler.ResetHandler2) //con credenciales --> token client,  getUser, Put a otro endpoint 
-
+	r.GET("/reset", handler.ResetHandlerRedirect)      // este es el que redirecciona a keycloak, funcional
+	r.POST("/reset", handler.ResetHandler)             // err: cookie no encontrada, sin credenciales
+	r.POST("/resetPass", handler.ResetPasswordHandler) // igual anterior pero con credenciales del cliente err: cookie no encontrada, sin credenciales
+	r.POST("/resetPass2", handler.ResetHandler2)       //con credenciales --> token client,  getUser, Put a otro endpoint
 
 	roles := []string{"cliente", "admin"}
-
 
 	endopointsPrueba := r.Group("/prueba")
 	endopointsPrueba.Use(middleware.AuthorizedJWT(roles))
