@@ -54,7 +54,7 @@ func LoginHandler(c *gin.Context) {
 	}
 	//c.SetCookie("access_token", token, 3600, "/", "http://conducirya.com.ar", false, true) // ver el dominio en el cual estaría habilitada
 	c.Header("access_token", token)
-	c.JSON(http.StatusOK, gin.H{"access_token": token, "user": datosUsuario}) //
+	c.JSON(http.StatusOK, gin.H{"access_token": token, "profile": datosUsuario}) //
 
 	// Ya lo redireccionan del front
 	//c.Redirect(http.StatusFound, "http://conducirya.com.ar")
@@ -70,7 +70,7 @@ func authenticateUser(username, password string) (string, error) {
 			TokenURL: tokenURL,
 			AuthURL:  authURL,
 		},
-		Scopes: []string{"roles","usuario"}, //"profile", "email",DNI con atribbute
+		Scopes: []string{"roles","profile"}, //"profile", "email",DNI con atribbute
 	}
 
 	ctx := context.Background()
@@ -82,9 +82,24 @@ func authenticateUser(username, password string) (string, error) {
 	return token.AccessToken, nil
 }
 
+
+type Claims struct {
+	Profile internal.User `json:"profile"`
+	
+}
+/*
+type client struct {
+	DriveFluency clientRoles `json:"DriveFluency,omitempty"`
+}
+
+type clientRoles struct {
+	Roles []string `json:"roles,omitempty"`
+}
+*/
+
 func saveUser(token string , c *gin.Context) (internal.User,error){
 
-  var Usuario internal.User
+  var Claims Claims
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
@@ -116,12 +131,12 @@ func saveUser(token string , c *gin.Context) (internal.User,error){
 	
 	}
 
-	if err := idToken.Claims(&Usuario); err != nil {
+	if err := idToken.Claims(&Claims); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to extract claims"})
 	}
-	log.Print("esto es lo que trajo del usuario",Usuario)
+	log.Print("esto es lo que trajo del usuario",Claims.Profile)
 
-	return Usuario, nil
+	return Claims.Profile, nil
 
 
 }

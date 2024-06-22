@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
-
+	"io"
 	"github.com/coreos/go-oidc"
 	"github.com/gin-gonic/gin"
 )
@@ -64,6 +65,47 @@ func LogoutHandler(c *gin.Context) {
 
 	log.Printf("token de validación verificado por el IAM: %s", idToken)
 
+	form := url.Values{}
+	form.Add("client_id", clientID)
+	form.Add("client_secret",clientSecret)
+	form.Add("access_token", rawAccessToken) // access token --> probar nuevamente jti
+	form.Add("prompt", "none") // no termina de cerrar a pesar de no solicitar confirmacion
+	form.Add("post_logout_redirect_uri", "http://conducirya.com.ar") 
+
+	// preparar la solicitud de cierre de sesión a keycloak
+	request, err := http.NewRequestWithContext(ctx, "POST", logoutURL, strings.NewReader(form.Encode()))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create logout request"})
+		return
+	}
+
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	logOut, err := client.Do(request)
+	if err != nil {
+		log.Printf("Error during logout request: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed logout"})
+		return
+	}
+	defer logOut.Body.Close()
+
+	bodyBytes, _ := io.ReadAll(logOut.Body)
+		bodyString := string(bodyBytes)
+
+		log.Printf("Logout trae: %d, response: %s", logOut.StatusCode, bodyString)
+
+	if logOut.StatusCode != http.StatusOK {
+		log.Printf("Logout failed, status code: %d, response: %s", logOut.StatusCode, bodyString)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed logout", "details": bodyString})
+		return
+		
+	}
+
+	log.Printf("cierre de sesión exitoso %s", logOut.Status)
+	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
+
+
+	/*
 	//func (*oidc.IDToken).Claims(v interface{}) error Claims unmarshals the raw JSON payload of the ID Token into a provided struct
 	var claims map[string]interface{}
 	if err := idToken.Claims(&claims); err != nil {
@@ -100,5 +142,7 @@ func LogoutHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
 	//c.Redirect(http.StatusFound, "http://conducirya.com.ar")
 	// del front borran el jwt del localstorage
+
+	*/
 
 }
