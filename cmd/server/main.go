@@ -29,15 +29,18 @@ func main() {
 
 	// Configurar CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins: []string{
+			"http://localhost:3000",
+			"http://conducirya.com.ar",
+			"http://www.conducirya.com.ar",
+			"https://conducirya.com.ar",
+			"https://www.conducirya.com.ar",
+		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true, //habilita uso de cookies
-		/*AllowOriginFunc: func(origin string) bool {
-			return origin == "http://localhost:3000"
-		},*/
-		MaxAge: 12 * time.Hour,
+		MaxAge:           12 * time.Hour,
 	}))
 
 	docs.SwaggerInfo.Host = "localhost:8085"
