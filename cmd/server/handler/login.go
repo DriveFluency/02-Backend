@@ -1,24 +1,21 @@
 package handler
 
 import (
-	"fmt"
-	"net/http"
-	"github.com/DriveFluency/02-Backend/internal"
-	"github.com/gin-gonic/gin"
-	"github.com/coreos/go-oidc"
 	"context"
+	"fmt"
 	"log"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
-	"time"
-	"crypto/tls"
 )
 
 var (
 	clientID     = "drivefluency"
-	clientSecret = "083E22w85Iw9T2vctotLkT3ZAEDaqXsA"                   //
-	realmURL     = "http://conducirya.com.ar:18080/realms/DriveFluency" //http://localhost:8090/realms/DriveFluency"
-	tokenURL = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
-	authURL  = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
+	clientSecret = "083E22w85Iw9T2vctotLkT3ZAEDaqXsA"
+	realmURL     = "http://conducirya.com.ar:18080/realms/DriveFluency"
+	tokenURL     = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
+	authURL      = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
 )
 
 type RequestBody struct {
@@ -47,21 +44,11 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	/**/datosUsuario, err := saveUser(token, c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "save properties of user"})
-		return
-	}
-	//c.SetCookie("access_token", token, 3600, "/", "http://conducirya.com.ar", false, true) // ver el dominio en el cual estaría habilitada
+	log.Printf("Access Token:  %s\n", token)
 	c.Header("access_token", token)
-	c.JSON(http.StatusOK, gin.H{"access_token": token, "profile": datosUsuario}) //
-
-	// Ya lo redireccionan del front
-	//c.Redirect(http.StatusFound, "http://conducirya.com.ar")
-
+	c.JSON(http.StatusOK, gin.H{"access_token": token})
 }
 
-// postman
 func authenticateUser(username, password string) (string, error) {
 	oauth2Config := &oauth2.Config{
 		ClientID:     clientID,
@@ -70,7 +57,6 @@ func authenticateUser(username, password string) (string, error) {
 			TokenURL: tokenURL,
 			AuthURL:  authURL,
 		},
-		Scopes: []string{"roles","profile"}, //"profile", "email",DNI con atribbute
 	}
 
 	ctx := context.Background()
@@ -79,64 +65,7 @@ func authenticateUser(username, password string) (string, error) {
 		log.Printf("Error getting token: %v", err)
 		return "", err
 	}
+
+	//
 	return token.AccessToken, nil
-}
-
-
-type Claims struct {
-	Profile internal.User `json:"profile"`
-	
-}
-/*
-type client struct {
-	DriveFluency clientRoles `json:"DriveFluency,omitempty"`
-}
-
-type clientRoles struct {
-	Roles []string `json:"roles,omitempty"`
-}
-*/
-
-func saveUser(token string , c *gin.Context) (internal.User,error){
-
-  var Claims Claims
-
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
-	client := &http.Client{
-		Timeout:   time.Duration(10000) * time.Second,
-		Transport: tr,
-	}
-
-	ctx := oidc.ClientContext(context.Background(), client)
-
-	provider, err := oidc.NewProvider(ctx, realmURL)
-	if err != nil {
-		log.Printf("Error getting the provider: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed save user while getting the provider"})	
-		
-	}
-
-	oidcConfig := &oidc.Config{
-		ClientID: clientID,
-	}
-
-	verifier := provider.Verifier(oidcConfig)
-	log.Printf("devuelve un IDTokenVerifier que utiliza el conjunto de claves del proveedor para verificar los JWT.")
-
-	idToken, err := verifier.Verify(ctx, token)
-	if err != nil {
-		log.Printf("Error getting token: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to verify token"})
-	
-	}
-
-	if err := idToken.Claims(&Claims); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to extract claims"})
-	}
-	log.Print("esto es lo que trajo del usuario",Claims.Profile)
-
-	return Claims.Profile, nil
-
-
 }

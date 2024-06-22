@@ -3,13 +3,15 @@ package main
 import (
 	"net/http"
 	"time"
+
 	"github.com/DriveFluency/02-Backend/cmd/server/handler"
-	//"github.com/DriveFluency/02-Backend/docs"
 	"github.com/DriveFluency/02-Backend/pkg/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	//swaggerFiles "github.com/swaggo/files"
-	//ginSwagger "github.com/swaggo/gin-swagger"
+	// TODO: Habilitar cuando esten los endpoints listos
+	// "github.com/DriveFluency/02-Backend/docs"
+	// "github.com/swaggo/files"
+	// "github.com/swaggo/gin-swagger"
 )
 
 // @title Drive Fluency
@@ -28,27 +30,31 @@ func main() {
 
 	// Configurar CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},//"http://conducirya.com.ar"
+		AllowAllOrigins:  true, // TODO: Configuracion insegura, permite todos los origenes.
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length","Authorization"},
+		ExposeHeaders:    []string{"Content-Length", "Authorization"},
 		AllowCredentials: true,
-		/*AllowOriginFunc: func(origin string) bool {
-			return origin == "http://conducirya.com.ar"
-		},*/
-		MaxAge: 12 * time.Hour,
+		MaxAge:           12 * time.Hour,
 	}))
 
-	/*docs.SwaggerInfo.Host = "localhost:8085"
-	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))*/
+	/*
+		// TODO: Habilitar cuando esten los endpoints listos
+		docs.SwaggerInfo.Host = "localhost:8085"
+		docs.SwaggerInfo.Title = "Drive Fluency API"
+		docs.SwaggerInfo.Description = "Drive Fluency API"
+		docs.SwaggerInfo.Version = "1.0"
+		r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	*/
 
-	r.POST("/login", handler.LoginHandler)
-	// r.GET("/callback", handler.CallbackHandler)
-	r.POST("/logout", handler.LogoutHandler)
 	r.GET("/reset", handler.ResetHandler)
 
+	r.POST("/login", handler.LoginHandler)
+	r.POST("/logout", handler.LogoutHandler)
+	r.POST("/register", handler.RegisterUserHandler)
+
 	roles := []string{"cliente", "admin"}
-	
+
 	endopointsPrueba := r.Group("/prueba")
 	endopointsPrueba.Use(middleware.AuthorizedJWT(roles))
 	{
@@ -60,8 +66,6 @@ func main() {
 			c.JSON(http.StatusOK, gin.H{"endpoint": "only user admin"})
 		})
 	}
-	
-
 
 	r.Run(":8085")
 }
