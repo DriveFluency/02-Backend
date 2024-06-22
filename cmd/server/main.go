@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"time"
+
 	"github.com/DriveFluency/02-Backend/cmd/server/handler"
 	"github.com/DriveFluency/02-Backend/docs"
 	"github.com/DriveFluency/02-Backend/pkg/middleware"
@@ -10,11 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-
-
-
 )
-
 
 // @title Drive Fluency
 // @version 1.0
@@ -49,14 +46,15 @@ func main() {
 	r.POST("/login", handler.LoginHandler)
 	// r.GET("/callback", handler.CallbackHandler)
 	r.POST("/logout", handler.LogoutHandler)
-	r.GET("/reset", handler.ResetHandlerRedirect) // este es el que redirecciona a keycloak, funcional 
-	r.POST("/reset", handler.ResetHandler) // err: cookie no encontrada, sin credenciales 
-	r.POST("/resetPass", handler.ResetPasswordHandler) // igual anterior pero con credenciales del cliente err: cookie no encontrada, sin credenciales 
-	r.POST("/resetPass2", handler.ResetHandler2) //con credenciales --> token client,  getUser, Put a otro endpoint 
+	r.GET("/reset", handler.ResetHandlerRedirect)      // este es el que redirecciona a keycloak, funcional
+	r.POST("/reset", handler.ResetHandler)             // err: cookie no encontrada, sin credenciales
+	r.POST("/resetPass", handler.ResetPasswordHandler) // igual anterior pero con credenciales del cliente err: cookie no encontrada, sin credenciales
+	r.POST("/resetPass2", handler.ResetHandler2)       //con credenciales --> token client,  getUser, Put a otro endpoint
 
+	// Registro de Usuarios en Keycloack
+	r.POST("/register", handler.RegisterUserHandler)
 
 	roles := []string{"cliente", "admin"}
-
 
 	endopointsPrueba := r.Group("/prueba")
 	endopointsPrueba.Use(middleware.AuthorizedJWT(roles))
