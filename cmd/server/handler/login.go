@@ -1,23 +1,21 @@
 package handler
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"net/http"
-	//"github.com/coreos/go-oidc"
 	"context"
-	"golang.org/x/oauth2"
+	"fmt"
 	"log"
-	
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2"
 )
 
 var (
 	clientID     = "drivefluency"
-	clientSecret = "UMQuQX26AD63348ftkzL8c2AyBB05s3f"//"083E22w85Iw9T2vctotLkT3ZAEDaqXsA" 
-	realmURL     =  "http://localhost:8090/realms/DriveFluency"   //"http://conducirya.com.ar:18080/realms/DriveFluency"
-	// redirectURI  = "http://localhost:8085/callback"
-	tokenURL = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
-	authURL  = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
+	clientSecret = "083E22w85Iw9T2vctotLkT3ZAEDaqXsA"
+	realmURL     = "http://conducirya.com.ar:18080/realms/DriveFluency"
+	tokenURL     = fmt.Sprintf("%s/protocol/openid-connect/token", realmURL)
+	authURL      = fmt.Sprintf("%s/protocol/openid-connect/auth", realmURL)
 )
 
 type RequestBody struct {
@@ -45,15 +43,10 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed"})
 		return
 	}
-	
+
 	log.Printf("setea el token en la cookie al iniciar sesión, %s", token)
 	c.Header("access_token", token)
-	//c.SetCookie("access_token", token, 1000, "/", "http://conducirya.com.ar", false, true) // ver el dominio en el cual estaría habilitada
 	c.JSON(http.StatusOK, gin.H{"access_token": token})
-
-	// Ya lo redireccionan del front 
-	//c.Redirect(http.StatusFound, "http://conducirya.com.ar")
-
 }
 
 // postman
@@ -65,7 +58,6 @@ func authenticateUser(username, password string) (string, error) {
 			TokenURL: tokenURL,
 			AuthURL:  authURL,
 		},
-		Scopes: []string{"roles", "email","dni"}, //"profile", "email", dni ? 
 	}
 
 	ctx := context.Background()
@@ -75,17 +67,16 @@ func authenticateUser(username, password string) (string, error) {
 		return "", err
 	}
 
-//
+	//
 	return token.AccessToken, nil
 }
 
-
 /*
-	// verified si esta todo bien retornas la estructura con sus datos también 
+	// verified si esta todo bien retornas la estructura con sus datos también
 
 	func getuser(token *oauth2.Token) User{
-   
-		
+
+
 		tr := &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 		client := &http.Client{
@@ -132,15 +123,11 @@ func authenticateUser(username, password string) (string, error) {
 				return
 			}
 		}	*/
-	/*	if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read user"})
-			return
-		}
+/*	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read user"})
+		return
+	}
 */
-	
-
-
-
 
 /*//callback
 

@@ -5,22 +5,23 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
-var UserURL="http://conducirya.com.ar:18080/admin/realms/DriveFluency/users" 
+var UserURL = "http://conducirya.com.ar:18080/admin/realms/DriveFluency/users"
 
 type TokenResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
-// genera el token para el cliente 
+// genera el token para el cliente
 func getAdminToken() (string, error) {
-	
+
 	data := fmt.Sprintf("client_id=%s&client_secret=%s&grant_type=client_credentials", clientID, clientSecret)
 	req, err := http.NewRequest("POST", tokenURL, bytes.NewBufferString(data))
 	if err != nil {
@@ -61,10 +62,9 @@ type User struct {
 	Username string `json:"username"`
 }
 
-
-//figura que  no tiene permisos para listar los usuarios 
+// figura que  no tiene permisos para listar los usuarios
 func findUserID(username, token string) (string, error) {
-	userURL := fmt.Sprintf("%s?username=%s",UserURL, username)
+	userURL := fmt.Sprintf("%s?username=%s", UserURL, username)
 
 	req, err := http.NewRequest("GET", userURL, nil)
 	if err != nil {
@@ -86,7 +86,7 @@ func findUserID(username, token string) (string, error) {
 	}
 
 	log.Println("usuarios con ese nombre retornados antes de pasar a bytes", resp)
-	 // aca arroja un 403 , no se tienen los permisos para acceder a los usuarios
+	// aca arroja un 403 , no se tienen los permisos para acceder a los usuarios
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
@@ -116,7 +116,7 @@ func ResetHandler2(c *gin.Context) {
 		return
 	}
 
-	token, err := getAdminToken()
+	token, err := getAdminUserToken()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get admin token"})
 		return

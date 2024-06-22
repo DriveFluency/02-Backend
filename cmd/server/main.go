@@ -54,6 +54,9 @@ func main() {
 	r.POST("/resetPass", handler.ResetPasswordHandler) // igual anterior pero con credenciales del cliente err: cookie no encontrada, sin credenciales
 	r.POST("/resetPass2", handler.ResetHandler2)       //con credenciales --> token client,  getUser, Put a otro endpoint
 
+	// Registro de Usuarios en Keycloack
+	r.POST("/register", handler.RegisterUserHandler)
+
 	roles := []string{"cliente", "admin"}
 
 	endopointsPrueba := r.Group("/prueba")
