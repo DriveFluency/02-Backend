@@ -52,6 +52,7 @@ func main() {
 	r.POST("/login", handler.LoginHandler)
 	r.POST("/logout", handler.LogoutHandler)
 	r.POST("/register", handler.RegisterUserHandler)
+	r.POST("/change",handler.ChangePasswordHandler)
 
 	roles := []string{"cliente", "admin"}
 

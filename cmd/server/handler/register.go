@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
-
 	"github.com/gin-gonic/gin"
 	"gopkg.in/resty.v1"
 )
