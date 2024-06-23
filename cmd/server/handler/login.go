@@ -3,7 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"github.com/DriveFluency/02-Backend/internal"
+	"github.com/DriveFluency/02-Backend/internal/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/coreos/go-oidc"
 	"context"
@@ -84,7 +84,7 @@ func authenticateUser(username, password string) (string, error) {
 
 
 type Claims struct {
-	Profile internal.User `json:"profile"`
+	Profile domain.User `json:"profile"`
 	
 }
 /*
@@ -97,7 +97,7 @@ type clientRoles struct {
 }
 */
 
-func saveUser(token string , c *gin.Context) (internal.User,error){
+func saveUser(token string , c *gin.Context) (domain.User,error){
 
   var Claims Claims
 
