@@ -1,0 +1,97 @@
+info:
+  contact:
+    name: API Support
+  description: This API Handle Shifts.
+  license: {}
+  termsOfService: https://terminos-y-condiciones
+  title: Drive Fluency
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Inicio de sesión
+  /packs:
+    get:
+      responses:
+        "200":
+          description: OK
+      summary: Buscar packs
+    post:
+      parameters:
+      - description: TOKEN
+        in: header
+        name: token
+        required: true
+        type: string
+      responses:
+        "201":
+          description: Created
+      summary: Crear pack
+  /packs/{id}:
+    delete:
+      parameters:
+      - description: TOKEN
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Eliminar pack
+    get:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+      summary: Buscar pack
+    patch:
+      parameters:
+      - description: TOKEN
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+      summary: Modificar un campo del pack
+    put:
+      parameters:
+      - description: TOKEN
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+      summary: Modificar pack
+swagger: "2.0"

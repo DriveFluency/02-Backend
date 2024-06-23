@@ -18,8 +18,9 @@ func NewPackHandler(service pack.Service) *packHandler {
 
 // @Summary Buscar pack
 // @Tag domain.pack
+// @Param id path int true "Item ID"
 // @Success 200
-// @Router /packs [get]
+// @Router /packs/{id} [get]
 func (h *packHandler) GetByID() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		idParam := ctx.Param("id")
@@ -68,8 +69,9 @@ func (h *packHandler) Post() gin.HandlerFunc {
 // @Summary Modificar pack
 // @Tag domain.pack
 // @Param token header string true "TOKEN"
+// @Param id path int true "Item ID"
 // @Success 200
-// @Router /packs [put]
+// @Router /packs/{id} [put]
 func (h *packHandler) Put() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		idParam := ctx.Param("id")
@@ -97,8 +99,9 @@ func (h *packHandler) Put() gin.HandlerFunc {
 // @Summary Modificar un campo del pack
 // @Tag domain.pack
 // @Param token header string true "TOKEN"
+// @Param id path int true "Item ID"
 // @Success 200
-// @Router /packs [patch]
+// @Router /packs/{id} [patch]
 func (h *packHandler) Patch() gin.HandlerFunc {
 	// estructura
 	type Request struct {
@@ -144,8 +147,9 @@ func (h *packHandler) Patch() gin.HandlerFunc {
 // @Summary Eliminar pack
 // @Tag domain.pack
 // @Param token header string true "TOKEN"
+// @Param id path int true "Item ID"
 // @Success 204
-// @Router /packs [delete]
+// @Router /packs/{id} [delete]
 func (h *packHandler) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		idParam := ctx.Param("id")

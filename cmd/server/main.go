@@ -13,9 +13,9 @@ import (
 	"github.com/DriveFluency/02-Backend/pkg/store"
 	"github.com/DriveFluency/02-Backend/internal/pack"
 
-	//swaggerFiles "github.com/swaggo/files"
-	//ginSwagger "github.com/swaggo/gin-swagger"
-	//"github.com/DriveFluency/02-Backend/docs"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/DriveFluency/02-Backend/cmd/server/docs"
 
 )
 
@@ -38,10 +38,6 @@ func main() {
 	  log.Fatal()
 	  panic(err.Error())
   }
-
-	/*docs.SwaggerInfo.Host = "localhost:8085"
-	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))*/
-
 
 	// iniciar las entidades
 	packStore := store.NewSqlPack(db)
@@ -99,6 +95,7 @@ func main() {
 	}
 	
 
-
+	docs.SwaggerInfo.Host = "localhost:8085" //"http://conducirya.com.ar:8085" 
+	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8085")
 }
