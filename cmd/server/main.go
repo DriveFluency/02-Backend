@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	//swaggerFiles "github.com/swaggo/files"
 	//ginSwagger "github.com/swaggo/gin-swagger"
+
 )
 
 // @title Drive Fluency
@@ -39,6 +40,7 @@ func main() {
 		MaxAge: 12 * time.Hour,
 	}))
 
+
 	/*docs.SwaggerInfo.Host = "localhost:8085"
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))*/
 
@@ -46,6 +48,7 @@ func main() {
 	// r.GET("/callback", handler.CallbackHandler)
 	r.POST("/logout", handler.LogoutHandler)
 	r.GET("/reset", handler.ResetHandler)
+	r.POST("/change",handler.ChangePasswordHandler)
 
 	roles := []string{"cliente", "admin"}
 	
