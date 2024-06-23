@@ -1,4 +1,4 @@
-package internal
+package domain
 
 type User struct {
 	Email     string `json:"email" binding:"required"`
