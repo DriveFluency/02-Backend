@@ -32,7 +32,7 @@ func main() {
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true, // TODO: Configuracion insegura, permite todos los origenes.
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "token"},
 		ExposeHeaders:    []string{"Content-Length", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -52,7 +52,8 @@ func main() {
 	r.POST("/login", handler.LoginHandler)
 	r.POST("/logout", handler.LogoutHandler)
 	r.POST("/register", handler.RegisterUserHandler)
-	r.POST("/change",handler.ChangePasswordHandler)
+	r.POST("/change", handler.ChangePasswordHandler)
+	r.PUT("/profile", handler.UpdateProfile)
 
 	roles := []string{"cliente", "admin"}
 

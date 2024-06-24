@@ -1,11 +1,13 @@
 package handler
 
 import (
-	"encoding/json"
-	"errors"
 	"net/http"
 	"reflect"
 	"strings"
+
+	"github.com/DriveFluency/02-Backend/cmd/server/config"
+	"github.com/DriveFluency/02-Backend/cmd/server/util"
+
 	"github.com/gin-gonic/gin"
 	"gopkg.in/resty.v1"
 )
@@ -19,14 +21,6 @@ type KeycloakConfig struct {
 	Realm        string
 }
 
-var config = KeycloakConfig{
-	BaseURL:   "http://conducirya.com.ar:18080",
-	AdminUser: "drivefluency@gmail.com",
-	AdminPass: "admin",
-	ClientID:  "admin-cli",
-	Realm:     "DriveFluency",
-}
-
 type Profile struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
@@ -38,34 +32,6 @@ type Profile struct {
 	Direccion string `json:"direccion"`
 	Username  string `json:"username"`
 	Password  string `json:"password"`
-}
-
-func getAdminUserToken() (string, error) {
-	// TODO: Es inseguro usar Direct Access Grants.
-	// Se recomienda cambiarlo para user ClientID y Client Secret
-	resp, err := resty.R().SetFormData(map[string]string{
-		"client_id":  config.ClientID,
-		"username":   config.AdminUser,
-		"password":   config.AdminPass,
-		"grant_type": "password",
-		"scope":      "openid",
-	}).Post(config.BaseURL + "/realms/" + config.Realm + "/protocol/openid-connect/token")
-
-	if err != nil {
-		return "", err
-	}
-
-	var result map[string]interface{}
-	if err := json.Unmarshal(resp.Body(), &result); err != nil {
-		return "", err
-	}
-
-	token, ok := result["access_token"].(string)
-	if !ok {
-		return "", errors.New("access_token not found in response")
-	}
-
-	return token, nil
 }
 
 // Mapa para traducir nombres de campos de inglés a español
@@ -83,6 +49,7 @@ var spanishFieldNames = map[string]string{
 }
 
 func RegisterUserHandler(c *gin.Context) {
+	cfg := config.GetConfig()
 	var profile Profile
 	if err := c.ShouldBindJSON(&profile); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -106,7 +73,7 @@ func RegisterUserHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := getAdminUserToken()
+	token, err := util.GetAdminUserToken(cfg)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error en registro (imposible obtener token admin): " + err.Error()})
 		return
@@ -138,7 +105,7 @@ func RegisterUserHandler(c *gin.Context) {
 		SetAuthToken(token).
 		SetHeader("Content-Type", "application/json").
 		SetBody(user).
-		Post(config.BaseURL + "/admin/realms/" + config.Realm + "/users")
+		Post(cfg.UserURL)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error en registro (error en keycloack): " + err.Error()})
