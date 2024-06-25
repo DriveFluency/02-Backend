@@ -7,6 +7,24 @@ info:
   title: Drive Fluency
   version: "1.0"
 paths:
+  /StudentPacks:
+    get:
+      responses:
+        "200":
+          description: OK
+      summary: Buscar StudentPackss
+  /StudentPacks/{dni}:
+    get:
+      parameters:
+      - description: Item dni
+        in: path
+        name: dni
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+      summary: Buscar StudentPacks
   /login:
     post:
       consumes:
@@ -94,4 +112,33 @@ paths:
         "200":
           description: OK
       summary: Modificar pack
+  /pay:
+    get:
+      responses:
+        "200":
+          description: OK
+      summary: Buscar pays
+    post:
+      parameters:
+      - description: TOKEN
+        in: header
+        name: token
+        required: true
+        type: string
+      responses:
+        "201":
+          description: Created
+      summary: Crear pay
+  /pay/{id}:
+    get:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+      summary: Buscar pay
 swagger: "2.0"

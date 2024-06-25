@@ -19,6 +19,35 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/StudentPacks": {
+            "get": {
+                "summary": "Buscar StudentPackss",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/StudentPacks/{dni}": {
+            "get": {
+                "summary": "Buscar StudentPacks",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item dni",
+                        "name": "dni",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "consumes": [
@@ -138,6 +167,52 @@ const docTemplate = `{
                         "in": "header",
                         "required": true
                     },
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/pay": {
+            "get": {
+                "summary": "Buscar pays",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Crear pay",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "TOKEN",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        },
+        "/pay/{id}": {
+            "get": {
+                "summary": "Buscar pay",
+                "parameters": [
                     {
                         "type": "integer",
                         "description": "Item ID",

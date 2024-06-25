@@ -2,20 +2,21 @@ package main
 
 import (
 	"database/sql"
-	_"github.com/go-sql-driver/mysql"
+	"log"
 	"net/http"
 	"time"
 	"github.com/DriveFluency/02-Backend/cmd/server/handler"
+	"github.com/DriveFluency/02-Backend/cmd/server/docs"
+	"github.com/DriveFluency/02-Backend/internal/studentpacks"
+	"github.com/DriveFluency/02-Backend/internal/pack"
+	"github.com/DriveFluency/02-Backend/internal/pay"
 	"github.com/DriveFluency/02-Backend/pkg/middleware"
+	"github.com/DriveFluency/02-Backend/pkg/store"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"log"
-	"github.com/DriveFluency/02-Backend/pkg/store"
-	"github.com/DriveFluency/02-Backend/internal/pack"
+	_ "github.com/go-sql-driver/mysql"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/DriveFluency/02-Backend/docs"
-
 )
 
 // @title Drive Fluency
@@ -43,6 +44,18 @@ func main() {
 	packRepo := pack.NewRepositoryPack(packStore)
 	packService := pack.NewServicePack(packRepo)
 	packHandler := handler.NewPackHandler(packService)
+
+	
+	studentPacksStore := store.NewSqlStudentPacks(db)
+	studentPacksRepo := studentPacks.NewRepositoryStudentPacks(studentPacksStore) 
+	studentPacksService := studentPacks.NewServiceStudentPacks(studentPacksRepo)
+	studentPacksHandler := handler.NewStudentPacksHandler(studentPacksService)
+
+	payStore := store.NewSqlPay(db)
+	payRepo := pay.NewRepositoryPay(payStore)
+	payService := pay.NewServicePay(payRepo)
+	payHandler := handler.NewPayHandler(payService,studentPacksService)
+
 
 	r := gin.Default()
 
@@ -77,6 +90,23 @@ func main() {
 		packs.PATCH("/:id",middleware.AuthorizedJWT(roles), packHandler.Patch())
 		packs.DELETE("/:id",middleware.AuthorizedJWT(roles), packHandler.Delete())
 		
+	}
+
+	//endpoints pay
+
+	pay := r.Group("/pay")
+	{
+		pay.GET("/:id",payHandler.GetByID())
+		pay.GET("", payHandler.GetAll())
+		pay.POST("",payHandler.Post())
+	}
+
+
+	//endpoints student Packs
+	studentPacks := r.Group("/student-packs")
+	{
+		studentPacks.GET("/:dni",studentPacksHandler.SearchByDni())
+		studentPacks.GET("",studentPacksHandler.GetAll() )
 	}
 
 	r.POST("/login", handler.LoginHandler)
