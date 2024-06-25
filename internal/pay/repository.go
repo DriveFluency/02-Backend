@@ -33,10 +33,12 @@ func (repo *repository) GetByID(id int) (domain.Pay, error) {
 }
 
 func (repo *repository) Create(p domain.Pay) (domain.Pay, error) {
-	err := repo.storage.Create(p)
+	id,err := repo.storage.Create(p)
 	if err != nil {
 		return domain.Pay{}, err 
 	}
+
+	p.Id =id
 	return p, nil
 
 }

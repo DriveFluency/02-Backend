@@ -54,6 +54,10 @@ func (p *sqlStudentPacks) Create(StudentPacks domain.StudentPacks)  error {
 	if err != nil{
 		return err
 	}
+
+	// select que traiga el último id .... 
+
+	
 	return nil
 }
 

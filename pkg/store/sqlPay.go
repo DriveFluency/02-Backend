@@ -28,23 +28,46 @@ func (p *sqlPay) Read(id int) (domain.Pay, error) {
 	return  Pay,nil
 }
 
-func (p *sqlPay) Create(Pay domain.Pay)  error {
+func (p *sqlPay) Create(Pay domain.Pay) (int,error) {
 
 	query:="INSERT INTO pay(date,method,amount,receipt) VALUES (?,?,?,?);"
 	stmt,err := p.db.Prepare(query)
 	if err != nil{
-		return err
+		return 0 , err
 	}
 	res,err := stmt.Exec(Pay.Date,Pay.Method,Pay.Amount,Pay.Receipt)	
 	if err != nil{
-		return err
+		return 0,err
 	}
 	_,err = res.RowsAffected()
 	if err != nil{
-		return err
+		return 0,err
 	}
-	return nil
+
+	ultimoId,err := res.LastInsertId()
+	log.Print(ultimoId)
+
+	/*var pay domain.Pay
+
+    query2 :="SELECT id FROM pay order by id desc limit 1 ;"
+    row,err := p.db.Query(query2)
+	if err != nil{
+		log.Fatal(err)
+	}
+	/*
+	for row.Next(){
+	
+		err:= row.Scan(&pay.Id)
+		if err != nil{
+			log.Fatal(err)
+		}
+
+	}
+*/
+	return int(ultimoId), nil
+
 }
+
 
 func (p *sqlPay) GetAll() ([]domain.Pay, error) {	
 	Pays := []domain.Pay{}
